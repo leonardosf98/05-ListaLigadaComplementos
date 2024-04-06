@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 using namespace std;
 
 // definicao de tipo
@@ -8,6 +8,7 @@ struct NO {
 };
 
 NO* primeiro = NULL;
+NO* ultimo = NULL;
 
 // headers
 void menu();
@@ -70,7 +71,7 @@ void menu()
 
 void inicializar()
 {
-	// se a lista j� possuir elementos
+	// se a lista já possuir elementos
 // libera a memoria ocupada
 	NO* aux = primeiro;
 	while (aux != NULL) {
@@ -80,6 +81,7 @@ void inicializar()
 	}
 
 	primeiro = NULL;
+	ultimo = NULL;
 	cout << "Lista inicializada \n";
 
 }
@@ -123,11 +125,16 @@ void inserirElemento()
 
 	cout << "Digite o elemento: ";
 	cin >> novo->valor;
+	if (posicaoElemento(novo->valor) != NULL) {
+		cout << "Esse valor j� se encontra na lista\n";
+		return;
+	}
 	novo->prox = NULL;
-
+	ultimo = novo;
 	if (primeiro == NULL)
 	{
 		primeiro = novo;
+		ultimo = novo;
 	}
 	else
 	{
@@ -137,17 +144,72 @@ void inserirElemento()
 			aux = aux->prox;
 		}
 		aux->prox = novo;
+		ultimo = novo;
 	}
 }
 
 void excluirElemento()
 {
-
+	int valueToDelete = 0;
+	cout << "Digite o valor a ser deletado: \n";
+	cin >> valueToDelete;
+	NO* knotToDelete = posicaoElemento(valueToDelete);
+	if (knotToDelete == NULL || primeiro == NULL) {
+		cout << "O valor nao foi encontrado para ser deletado ou a lista está vazia\n";
+		return;
+	}
+	if (knotToDelete->prox != NULL) {
+		NO* knotToSearch = primeiro;
+		NO* previousKnot = NULL;
+		while (knotToSearch->valor != valueToDelete && knotToSearch->prox != NULL) {
+			previousKnot = knotToSearch;
+			knotToSearch = knotToSearch->prox;
+		}
+		if (previousKnot == NULL) { //caso onde precisamos deletar o primeiro elemento
+			primeiro = primeiro->prox;
+			return;
+			if (primeiro == ultimo) { //caso onde precisamos deletar o único elemento da lista
+				primeiro = NULL;
+				return;
+			}
+		}
+		if (knotToSearch->prox == NULL) {//caso onde precisamos deletar o útlimo elemento
+			previousKnot->prox = NULL;
+			free(knotToSearch);
+			return;
+		}
+		previousKnot->prox = knotToSearch->prox;
+		free(knotToSearch);
+		cout << "Lista atual\n";
+		exibirElementos();
+	}
 }
 
 void buscarElemento()
 {
+	int valueToFind = 0;
+	cout << "Digite um valor para ser buscado: ";
+	cin >> valueToFind;
 
+	NO* result = posicaoElemento(valueToFind);
+
+	if (result != NULL) {
+		cout << "O valor foi encontrado\n";
+		return;
+	}
+	cout << "O valor nao foi encontrado\n";
 }
 
+NO* posicaoElemento(int numero)
+{
+	NO* aux = primeiro;
+	while (aux != NULL) {
+		if (aux->valor == numero)
+		{
+			break;
+		}
+		aux = aux->prox;
+	}
+	return aux;
+}
 
